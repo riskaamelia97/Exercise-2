@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Kalkulator</title>
+</head>
+
+<body>
+    <div class="wrapper" style="background-color: floralwhite; width: 160px;height: 300px;margin-left: 30px; margin-top: 20px;">
+        <div class="col " style=" background-color: black; color: white; height: 30px; width: 160px;padding-left: 40px; font-family: 'Times New Roman', Times, serif; font-size:20px;">kalkulator</div>
+        <div id="calculator" class="calculator">
+            <table>
+                <tr class="table-active" style="height: 40px; width:120px;">
+                    <td colspan="5" id="viewer" class="viewer">0
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="btn btn-outline-primary num" data-toggle="button" data-num="7" style="height: 40px; width:40px;">7</td>
+                    <td class="btn btn-outline-primary num" data-toggle="button" data-num="8" style="height: 40px; width:40px;">8</td>
+                    <td class="btn btn-outline-primary num" data-toggle="button" data-num="9" style="height: 40px; width:40px;">9</td>
+                    <td data-ops="plus" class="btn btn-danger ops" data-toggle="button" style="height: 40px; width:40px;">+</td>
+                </tr>
+
+                <tr>
+                    <td class="btn btn-outline-primary num" data-toggle="button" data-num="4" style="height: 40px; width:40px;">4</td>
+                    <td class="btn btn-outline-primary num" data-toggle="button" data-num="5" style="height: 40px; width:40px;">5</td>
+                    <td class="btn btn-outline-primary num" data-toggle="button" data-num="6" style="height: 40px; width:40px;">6</td>
+                    <td data-ops="minus" class="btn btn-danger ops" data-toggle="button" style="height: 40px; width:40px;">-</td>
+                </tr>
+
+                <tr>
+                    <td class="btn btn-outline-primary num" data-toggle="button" data-num="1" style="height: 40px; width:40px;">1</td>
+                    <td class="btn btn-outline-primary num" data-toggle="button" data-num="2" style="height: 40px; width:40px;">2</td>
+                    <td class="btn btn-outline-primary num" data-toggle="button" data-num="3" style="height: 40px; width:40px;">3</td>
+                    <td data-ops="times" class="btn btn-danger ops" data-toggle="button" style="height: 40px; width:40px;">*</td>
+                </tr>
+
+                <tr>
+                    <td class="btn btn-outline-primary num" data-toggle="button" data-num="0" style="height: 40px; width:40px;">0</td>
+                    <td td class="btn btn-outline-primary num" data-toggle="button" data-num="." style="height: 40px; width:40px;">.</td>
+                    <td id="clear" class="btn btn-warning clear" data-toggle="button" style="height: 40px; width:40px;">C</td>
+                    <td data-ops="divided by" class="btn btn-danger ops" data-toggle="button" style="height: 40px; width:40px;">/</td>
+                </tr>
+
+                <tr>
+                    <td colspan="5" id="equals" class="btn btn-success" data-result="" style="height: 40px; width: 160px;">=</td>
+                </tr>
+
+            </table>
+        </div>
+
+        <button id="reset" class="btn btn-info reset" style="height: 40px; width: 160px;">Reset?</button>
+    </div>
+
+    <script lang="javascript">
+        (function() {
+            "use strict";
+
+
+            var el = function(element) {
+                if (element.charAt(0) === "#") {
+                    return document.querySelector(element);
+                }
+
+                return document.querySelectorAll(element);
+            };
+
+            // Variables
+            var viewer = el("#viewer"),
+                equals = el("#equals"),
+                nums = el(".num"),
+                ops = el(".ops"),
+                theNum = "",
+                oldNum = "",
+                resultNum,
+                operator;
+
+
+            var setNum = function() {
+                if (resultNum) {
+                    theNum = this.getAttribute("data-num");
+                    resultNum = "";
+                } else {
+                    theNum += this.getAttribute("data-num");
+                }
+
+                viewer.innerHTML = theNum;
+
+            };
+
+
+            var moveNum = function() {
+                oldNum = theNum;
+                theNum = "";
+                operator = this.getAttribute("data-ops");
+
+                equals.setAttribute("data-result", "");
+            };
+
+
+            var displayNum = function() {
+
+
+                oldNum = parseFloat(oldNum);
+                theNum = parseFloat(theNum);
+
+
+                switch (operator) {
+                    case "plus":
+                        resultNum = oldNum + theNum;
+                        break;
+
+                    case "minus":
+                        resultNum = oldNum - theNum;
+                        break;
+
+                    case "times":
+                        resultNum = oldNum * theNum;
+                        break;
+
+                    case "divided by":
+                        resultNum = oldNum / theNum;
+                        break;
+
+
+                    default:
+                        resultNum = theNum;
+                }
+
+
+                if (!isFinite(resultNum)) {
+                    if (isNaN(resultNum)) {
+                        resultNum = "Mohon reset kalkulator";
+                    } else {
+                        resultNum = "Hasil tidak dapat terkalkulasi";
+                        el('#calculator').classList.add("broken");
+                        el('#reset').classList.add("show");
+                    }
+                }
+
+
+                viewer.innerHTML = resultNum;
+                equals.setAttribute("data-result", resultNum);
+
+
+                oldNum = 0;
+                theNum = resultNum;
+
+            };
+
+
+            var clearAll = function() {
+                oldNum = "";
+                theNum = "";
+                viewer.innerHTML = "0";
+                equals.setAttribute("data-result", resultNum);
+            };
+
+
+
+
+            for (var i = 0, l = nums.length; i < l; i++) {
+                nums[i].onclick = setNum;
+            }
+
+            for (var i = 0, l = ops.length; i < l; i++) {
+                ops[i].onclick = moveNum;
+            }
+
+
+            equals.onclick = displayNum;
+
+
+            el("#clear").onclick = clearAll;
+
+
+            el("#reset").onclick = function() {
+                window.location = window.location;
+            };
+
+        }());
+    </script>
+</body>
+
+</html>
